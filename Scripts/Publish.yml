@@ -1,0 +1,57 @@
+trigger:
+    branches:
+         include:
+         - master
+    paths:
+        include:
+        - Source/*
+pr: none
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- task: UseDotNet@2
+  displayName: Install .Net SDK 3.1.x
+  inputs:
+    packageType: 'sdk'
+    version: '3.1.x'
+    
+- task: DotNetCoreCLI@2
+  displayName: Build Source And Tests - Release
+  inputs:
+    command: 'build'
+    arguments: '--configuration $(buildConfiguration)'
+    projects: |
+     **/Source/*/*.csproj
+     **/Tests/*/*.csproj
+
+- task: VSTest@2
+  displayName: Run Unit Tests
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: |
+      **\*Tests*.dll
+      !**\*TestAdapter.dll
+      !**\obj\**
+    searchFolder: '$(System.DefaultWorkingDirectory)'
+    codeCoverageEnabled: true
+    runSettingsFile: 'Tests/CodeCoverage.runsettings'
+
+- task: DotNetCoreCLI@2
+  displayName: Pack Source - Release
+  inputs:
+    command: 'pack'
+    packagesToPack: '**/Source/*/*.csproj'
+    packDirectory: '$(Build.ArtifactStagingDirectory)'
+    arguments: '--configuration $(buildConfiguration)'
+    
+- task: PublishBuildArtifacts@1
+  displayName: Publish ArtifactStagingDirectory
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
