@@ -6,7 +6,7 @@
     <LangVersion>8.0</LangVersion>
     <Authors>Mark Dickinson</Authors>
     <Company>DickinsonBros</Company>
-    <RepositoryUrl>https://github.com/msdickinson/DickinsonBros.Test.git</RepositoryUrl> 
+    <RepositoryUrl>https://github.com/msdickinson/DickinsonBros.UnitTest.git</RepositoryUrl> 
     <RepositoryType>git</RepositoryType> 
     <Description>
     A test library to assist with unit testing
